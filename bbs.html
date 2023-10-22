@@ -29,7 +29,7 @@
             if (params["zone"]!=""){
                 inzone.value = params["zone"]
             }
-            update()
+            setInterval(update(),1000)
         }
         function update(){
             inday = document.getElementById("date")
