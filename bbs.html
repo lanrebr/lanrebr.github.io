@@ -29,7 +29,10 @@
             if (params["zone"]!=""){
                 inzone.value = params["zone"]
             }
-            setInterval(update,1000)
+            if (params["refresh"]!=undefined){
+                setInterval(update,1000)
+            }
+            update()
         }
         function update(){
             inday = document.getElementById("date")
@@ -46,18 +49,19 @@
             start = new Date(Date.parse(inday.value+"T"+inhour.value+"-"+inzone.value))
             diff = (today - start)
             secs = Math.round(diff/1000)
-            /*console.log(start,today,secs)*/
             curr.value=secs.toLocaleString()
-            if (secs> 1000000000){
+            if (secs > 1000000000){
                 secs = secs % 1000000000
+                secs = secs
             }
-            togo = 1000000000 - secs - 3600
-            /*console.log(start,today,secs)*/
+            if (params["adj"]!=undefined){
+                secs = secs + 3600
+            }
+            togo = 1000000000 - secs
             secs = today.getSeconds() + togo
             today.setSeconds(secs);
             diff = (today - start)
             secs = Math.round(diff/1000)
-            /*console.log(start,today,secs)*/
             bdate.value = today.toISOString().substring(0,10)
             bhour.value = today.toISOString().substring(11,16)
             future.value=secs.toLocaleString()
