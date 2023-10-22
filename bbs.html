@@ -39,6 +39,7 @@
 
             bday = document.getElementById("bdate")
             bhour = document.getElementById("bhour")
+            pending = document.getElementById("pending")
             future = document.getElementById("future")
 
             today = new Date()
@@ -50,9 +51,9 @@
             if (secs> 1000000000){
                 secs = secs % 1000000000
             }
-            secs = 1000000000 - secs - 3600
+            togo = 1000000000 - secs - 3600
             /*console.log(start,today,secs)*/
-            secs = today.getSeconds() + secs
+            secs = today.getSeconds() + togo
             today.setSeconds(secs);
             diff = (today - start)
             secs = Math.round(diff/1000)
@@ -60,6 +61,7 @@
             bdate.value = today.toISOString().substring(0,10)
             bhour.value = today.toISOString().substring(11,16)
             future.value=secs.toLocaleString()
+            pending.value=togo.toLocaleString()
         }
     </script>
 </header>
@@ -68,7 +70,7 @@
 <h1>Happy billion birth-second !!! </h1>
 Your were born on <input type="date" id="date" onchange="update()"/> at <input type="time" step="1" id="hour" onchange="update()"/> UTC <input type="time" id="zone" onchange="update()"/><p/>
 You are now <input type="text" id="current" readonly> seconds old.<p/>
-Your next billion birth-second is comming up !<p/>
+Your next billion birth-second is comming up in only <input type="text" id="pending" readonly> seconds !<p/>
 You will be  <input type="text" id="future" readonly> seconds old on <input type="date" id="bdate" readonly/> at <input type="time" step="1" id="bhour" readonly/>
 <p/><p/>
 Have a happy billion birth-second !!!<p/>
