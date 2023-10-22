@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<header>
+    <title>The billion birth second</title>
+    <script>
+        function getParams() {
+            var idx = document.URL.indexOf('?');
+            var params = new Array();
+            if (idx != -1) {
+                var pairs = document.URL.substring(idx+1, document.URL.length).split('&');
+                for (var i=0; i<pairs.length; i++) {
+                    nameVal = pairs[i].split('=');
+                    params[nameVal[0]] = nameVal[1];
+                }
+            }
+            return params;
+        }
+        function init(){
+            params = getParams();
+            inday = document.getElementById("date")
+            inhour = document.getElementById("hour")
+            inzone = document.getElementById("zone")
+            if (params["date"]!=""){
+                inday.value = params["date"]
+            }
+            if (params["time"]!=""){
+                inhour.value = params["time"]
+            }
+            if (params["zone"]!=""){
+                inzone.value = params["zone"]
+            }
+            update()
+        }
+        function update(){
+            inday = document.getElementById("date")
+            inhour = document.getElementById("hour")
+            inzone = document.getElementById("zone")
+            curr = document.getElementById("current")
+
+            bday = document.getElementById("bdate")
+            bhour = document.getElementById("bhour")
+            future = document.getElementById("future")
+
+            today = new Date()
+            start = new Date(Date.parse(inday.value+"T"+inhour.value+"-"+inzone.value))
+            diff = (today - start)
+            secs = Math.round(diff/1000)
+            console.log(start,today,secs)
+            curr.value=secs.toLocaleString()
+            if (secs> 1000000000){
+                secs = secs % 1000000000
+            }
+            secs = 1000000000 - secs - 3600
+            console.log(start,today,secs)
+            secs = today.getSeconds() + secs
+            today.setSeconds(secs);
+            diff = (today - start)
+            secs = Math.round(diff/1000)
+            console.log(start,today,secs)
+            bdate.value = today.toISOString().substring(0,10)
+            bhour.value = today.toISOString().substring(11,16)
+            future.value=secs.toLocaleString()
+        }
+    </script>
+</header>
+<body onload="init();">
+
+<h1>Happy billion birth-second !!! </h1>
+Born on <input type="date" id="date" onchange="update()"/> at <input type="time" step="1" id="hour" onchange="update()"/> UTC <input type="time" id="zone" onchange="update()"/><p/>
+You are now <input type="text" id="current" readonly> seconds old.<p/>
+Your billion birth-second is comming up !<p/>
+You will be  <input type="text" id="future" readonly> seconds old on <input type="date" id="bdate" readonly/> at <input type="time" step="1" id="bhour" readonly/>
+<p/>
+<iframe src="https://giphy.com/embed/AwcmOV28QPnck" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+<p/>
+Happy billion birth-second !!!<p/>
+
+</body>
+</html>
