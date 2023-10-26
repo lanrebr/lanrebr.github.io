@@ -24,15 +24,43 @@
                 inday.value = params["date"]
             }
             if (params["time"]!=""){
-                inhour.value = params["time"]
+                inhour.value =  decodeURIComponent(params["time"])
             }
             if (params["zone"]!=""){
-                inzone.value = params["zone"]
+                inzone.value =  decodeURIComponent(params["zone"])
             }
             if (params["refresh"]!=undefined){
                 setInterval(update,1000)
             }
             update()
+        }
+        function refreshUrl(){
+            inday = document.getElementById("date")
+            inhour = document.getElementById("hour")
+            inzone = document.getElementById("zone")
+            start = new Date(Date.parse(inday.value+"T"+inhour.value+"-"+inzone.value))
+            yr = start.getFullYear()
+            mo = (start.getMonth()+1).toString().padStart(2, '0')
+            dy = start.getDate().toString().padStart(2, '0')
+            hr = start.getHours().toString().padStart(2, '0')
+            mi = start.getMinutes().toString().padStart(2, '0')
+            zo = start.getTimezoneOffset()
+            zm = zo % 60
+            zh = (zo - zm)/60
+            zh = zh.toString().padStart(2, '0')
+            zm = zm.toString().padStart(2, '0')
+
+            pdate = yr+'-'+mo+'-'+dy
+            ptime = hr+':'+mi
+            pzone = zh+':'+zm
+            var href = new URL(window.location.href)
+            href.searchParams.set("date", pdate)
+            href.searchParams.set("time", ptime)
+            href.searchParams.set("zone", pzone)
+
+            share = document.getElementById("share")
+            share.href = href
+            /*window.location.search = searchParams.toString()*/
         }
         function update(){
             inday = document.getElementById("date")
@@ -66,6 +94,7 @@
             bhour.value = today.toISOString().substring(11,16)
             future.value=secs.toLocaleString()
             pending.value=togo.toLocaleString()
+            refreshUrl()
         }
     </script>
 </header>
@@ -78,6 +107,8 @@ Your next billion birth-second is comming up in only <input type="text" id="pend
 You will be  <input type="text" id="future" readonly> seconds old on <input type="date" id="bdate" readonly/> at <input type="time" step="1" id="bhour" readonly/>
 <p/><p/>
 Have a happy billion birth-second !!!<p/>
-
+<div class="fb-share-button" data-layout="button" data-size="small">
+<a id="share" onclick="refreshUrl()" target="_blank" class="fb-xfbml-parse-ignore">Share</a>
+</div>
 </body>
 </html>
