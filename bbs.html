@@ -3,112 +3,111 @@
 <header>
     <title>The billion birth second</title>
     <script>
+        const zonelist=["-12:00","-11:00","-10:00","-09:30","-09:00","-08:00","-07:00","-06:00","-05:00","-04:00","-03:30","-03:00","-02:00","-01:00","+00:00","+01:00","+02:00","+03:00","+03:30","+04:00","+04:30","+05:00","+05:30","+05:45","+06:00","+06:30","+07:00","+08:00","+08:45","+09:00","+09:30","+10:00","+10:30","+11:00","+12:00","+12:45","+13:00","+14:00"];
+        const offlist=[-720,-660,-600,-570,-540,-480,-420,-360,-300,-240,-210,-180,-120,-60,0,60,120,180,210,240,270,300,330,345,360,390,420,480,525,540,570,600,630,660,720,765,780,840]
         function getParams() {
             var idx = document.URL.indexOf('?');
             var params = new Array();
             if (idx != -1) {
                 var pairs = document.URL.substring(idx+1, document.URL.length).split('&');
                 for (var i=0; i<pairs.length; i++) {
-                    nameVal = pairs[i].split('=');
+                    var nameVal = pairs[i].split('=');
                     params[nameVal[0]] = nameVal[1];
                 }
             }
             return params;
         }
         function init(){
-            params = getParams();
-            inday = document.getElementById("date")
-            inhour = document.getElementById("hour")
-            inzone = document.getElementById("zone")
-            if (params["date"]!=""){
-                inday.value = params["date"]
+            var params = getParams();
+            var date = params["date"]
+            var ref = new Date()
+            if (date!=undefined){
+               ref = new Date(Date.parse(decodeURIComponent(date)))
             }
-            if (params["time"]!=""){
-                inhour.value =  decodeURIComponent(params["time"])
-            }
-            if (params["zone"]!=""){
-                inzone.value =  decodeURIComponent(params["zone"])
-            }
-            if (params["refresh"]!=undefined){
-                setInterval(update,1000)
-            }
+            var offset = -ref.getTimezoneOffset();
+            var ltime = new Date(ref.getTime()+offset*60000)
+            start.value = ltime.toISOString().slice(0, 19)
+            zone.value = getZone(offset)
+
+            for (let i = 0; i < zonelist.length; i++) { 
+                var option = document.createElement('option');
+                option.dataset.value = offlist[i]
+                option.value = zonelist[i]
+                zones.appendChild(option);
+            };
             update()
         }
+        function getZone(off){
+            var pre = "+"
+            if (off<0){
+                pre="-"
+                off = -off
+            }
+            var hour = Math.round(off/60)
+            var min = off - hour*60
+            var zon = pre+hour.toString().padStart(2, '0')+":"+min.toString().padStart(2, '0')
+            return zon
+        }
+
         function refreshUrl(){
-            inday = document.getElementById("date")
-            inhour = document.getElementById("hour")
-            inzone = document.getElementById("zone")
-            start = new Date(Date.parse(inday.value+"T"+inhour.value+"-"+inzone.value))
-            yr = start.getFullYear()
-            mo = (start.getMonth()+1).toString().padStart(2, '0')
-            dy = start.getDate().toString().padStart(2, '0')
-            hr = start.getHours().toString().padStart(2, '0')
-            mi = start.getMinutes().toString().padStart(2, '0')
-            zo = start.getTimezoneOffset()
-            zm = zo % 60
-            zh = (zo - zm)/60
-            zh = zh.toString().padStart(2, '0')
-            zm = zm.toString().padStart(2, '0')
-
-            pdate = yr+'-'+mo+'-'+dy
-            ptime = hr+':'+mi
-            pzone = zh+':'+zm
+            var datestr = start.value+":00"+zone.value
+            var ref=new Date(Date.parse(datestr))
             var href = new URL(window.location.href)
-            href.searchParams.set("date", pdate)
-            href.searchParams.set("time", ptime)
-            href.searchParams.set("zone", pzone)
-
-            share = document.getElementById("share")
+            href.searchParams.set("date", datestr)
+            var share = document.getElementById("share")
             share.href = href
             /*window.location.search = searchParams.toString()*/
         }
         function update(){
-            inday = document.getElementById("date")
-            inhour = document.getElementById("hour")
-            inzone = document.getElementById("zone")
-            curr = document.getElementById("current")
+            var datestr = start.value+zone.value
+            secs = Date.parse(datestr)
+            var ref=new Date(secs)
 
-            bday = document.getElementById("bdate")
-            bhour = document.getElementById("bhour")
-            pending = document.getElementById("pending")
-            future = document.getElementById("future")
+            var now = new Date()
+            var noff = -now.getTimezoneOffset();
+            var lnow = new Date(now.getTime()+noff*60000)
+            var nzon = getZone(noff)
+ 
+            console.log(datestr, secs, now,ref)
+            var diff = Math.round((now.getTime()-ref.getTime())/1000)
+            console.log(diff)
+            sofar = diff
+            if (sofar > 1000000000){
+                sofar = sofar % 1000000000
+            }
+            var needed = 1000000000 - sofar
+            var secs = now.getTime() + needed*1000
 
-            today = new Date()
-            start = new Date(Date.parse(inday.value+"T"+inhour.value+"-"+inzone.value))
-            diff = (today - start)
-            secs = Math.round(diff/1000)
-            curr.value=secs.toLocaleString()
-            if (secs > 1000000000){
-                secs = secs % 1000000000
-                secs = secs
-            }
-            if (params["adj"]!=undefined){
-                secs = secs + 3600
-            }
-            togo = 1000000000 - secs
-            secs = today.getSeconds() + togo
-            today.setSeconds(secs);
-            diff = (today - start)
-            secs = Math.round(diff/1000)
-            bdate.value = today.toISOString().substring(0,10)
-            bhour.value = today.toISOString().substring(11,16)
-            future.value=secs.toLocaleString()
-            pending.value=togo.toLocaleString()
+            var target = new Date(secs)
+            var foff = -target.getTimezoneOffset();
+            var lfuture = new Date(target.getTime()+foff*60000)
+            var fzon = getZone(foff)
+
+            var final = Math.round((target.getTime()-ref.getTime())/1000)
+
+            czone.value = nzon
+            fzone.value = fzon
+            elapsed.value = diff.toLocaleString()
+            togo.value = needed.toLocaleString()
+            total.value = final.toLocaleString()
+
+            console.log(datestr,ref,now,lnow,target,lfuture)
+
+            current.value = lnow.toISOString().slice(0, 19)
+            future.value = lfuture.toISOString().slice(0, 19)
+
             refreshUrl()
         }
     </script>
 </header>
-<body onload="init();">
-
-<h1>Happy billion birth-second !!! </h1>
-Your were born on <input type="date" id="date" onchange="update()"/> at <input type="time" step="1" id="hour" onchange="update()"/> UTC <input type="time" id="zone" onchange="update()"/><p/>
-You are now <input type="text" id="current" readonly> seconds old.<p/>
-Your next billion birth-second is comming up in only <input type="text" id="pending" readonly> seconds !<p/>
-You will be  <input type="text" id="future" readonly> seconds old on <input type="date" id="bdate" readonly/> at <input type="time" step="1" id="bhour" readonly/>
-<p/><p/>
-Have a happy billion birth-second !!!<p/>
-<div class="fb-share-button" data-layout="button" data-size="small">
-<a id="share" onclick="refreshUrl()" target="_blank" class="fb-xfbml-parse-ignore">Share</a>
-</div>
+<body onload="init()">
+    Since  <input id="start" type="datetime-local" onchange="update()"/> <input id="zone" list="zones" onchange="update()" style="width:55px;"/> until
+    now, <input id="current" type="datetime-local" disabled style="width:200px;"/> <input id="czone" list="zones" style="width:55px;" disabled/>, <input id="elapsed" type="text" disabled style="width:80px;text-align:right;"/>secs have elapsed.
+    <p/>
+    On <input id="future" type="datetime-local" disabled style="width:200px;"/> <input id="fzone" list="zones" style="width:55px;" disabled/>, in <input id="togo" type="text" disabled style="width:80px;text-align:right;"/>secs more,
+    <input id="total" type="text" disabled style="width:90px;"/>secs will elapse.
+    <p/>
+    <a id="share" onclick="refreshUrl()" target="_blank" class="fb-xfbml-parse-ignore">Share</a>
+    <datalist id="zones"></datalist>
 </body>
 </html>
