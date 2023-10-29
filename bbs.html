@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-<header>
+<head>
+    <link rel="stylesheet" href="assets/css/style.scss">
     <title>The billion birth second</title>
     <script>
         const zonelist=["-12:00","-11:00","-10:00","-09:30","-09:00","-08:00","-07:00","-06:00","-05:00","-04:00","-03:30","-03:00","-02:00","-01:00","+00:00","+01:00","+02:00","+03:00","+03:30","+04:00","+04:30","+05:00","+05:30","+05:45","+06:00","+06:30","+07:00","+08:00","+08:45","+09:00","+09:30","+10:00","+10:30","+11:00","+12:00","+12:45","+13:00","+14:00"];
@@ -99,7 +100,7 @@
             refreshUrl()
         }
     </script>
-</header>
+</head>
 <body onload="init()">
     Since  <input id="start" type="datetime-local" onchange="update()"/> <input id="zone" list="zones" onchange="update()" style="width:55px;"/> until
     now, <input id="current" type="datetime-local" disabled style="width:200px;"/> <input id="czone" list="zones" style="width:55px;" disabled/>, <input id="elapsed" type="text" disabled style="width:80px;text-align:right;"/>secs have elapsed.
