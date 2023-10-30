@@ -56,7 +56,7 @@ permalink: /ybbs.html
         }
 
         function refreshUrl(){
-            var datestr = start.value+":00"+zone.value
+            var datestr = start.value+""+zone.value
             var ref=new Date(Date.parse(datestr))
             var href = new URL(window.location.href)
             href.searchParams.set("date", datestr)
@@ -97,7 +97,7 @@ permalink: /ybbs.html
             togo.value = needed.toLocaleString()
             total.value = final.toLocaleString()
 
-            console.log(datestr,ref,now,lnow,target,lfuture)
+            //console.log(datestr,ref,now,lnow,target,lfuture)
 
             current.value = lnow.toISOString().slice(0, 19)
             future.value = lfuture.toISOString().slice(0, 19)
@@ -107,11 +107,14 @@ permalink: /ybbs.html
     </script>
 </head>
 <body onload="init()">
-    Since  <input id="start" type="datetime-local" onchange="update()" style="width:200px;"/> <input id="zone" list="zones" onchange="update()" style="width:55px;"/> until
-    now, <input id="current" type="datetime-local" disabled style="width:200px;"/> <input id="czone" list="zones" style="width:55px;" disabled/>, <input id="elapsed" type="text" disabled style="width:80px;text-align:right;"/>secs have elapsed.
+    You were born on <input id="start" type="datetime-local" onchange="update()" style="width:200px;"/> <input id="zone" list="zones" onchange="update()" style="width:55px;"/> and,
     <p/>
-    On <input id="future" type="datetime-local" disabled style="width:200px;"/> <input id="fzone" list="zones" style="width:55px;" disabled/>, in <input id="togo" type="text" disabled style="width:80px;text-align:right;"/>secs more,
-    <input id="total" type="text" disabled style="width:90px;"/>secs will be reached.
+    as of <input id="current" type="datetime-local" readonly style="width:200px;"/> <input id="czone" list="zones" style="width:55px;" readonly/>, you are <input id="elapsed" type="text" readonly style="width:90px;text-align:right;"/>secs old.
+    <p/>
+    <h3>Congratulations... Your billion birth second is comming up !!!</h3><p/>
+    On <input id="future" type="datetime-local" readonly style="width:200px;"/> <input id="fzone" list="zones" style="width:55px;" readonly/>, in only <input id="togo" type="text" readonly style="width:90px;text-align:right;"/>secs more,
+    <p/>
+    you will be <input id="total" type="text" readonly style="width:90px;"/>secs old!.
     <p/>
     <a id="share" onclick="refreshUrl()" target="_blank" class="fb-xfbml-parse-ignore">Share</a>
     <datalist id="zones"></datalist>
